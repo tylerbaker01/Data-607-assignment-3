@@ -1,0 +1,114 @@
+---
+title: 'DATA 607 Assignment #3'
+author: "Tyler Baker"
+date: "9/12/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(stringr)
+```
+
+## Exercise 1
+
+Using the 173 majors listed in fivethirtyeight.com’s College Majors dataset [https://fivethirtyeight.com/features/the-economic-guide-to-picking-a-college-major/], provide code that identifies the majors that contain either "DATA" or "STATISTICS"
+
+```{r exercise #1}
+#There should be three majors that belong to this subset.
+
+majors<- read.csv("https://raw.githubusercontent.com/fivethirtyeight/data/master/college-majors/majors-list.csv")
+#read the csv file.
+str(majors)
+desired_majors <- grep("DATA|STATISTICS", majors$Major, value=TRUE)
+desired_majors
+```
+
+## Exercise 2
+
+Write code that transforms the data below:
+
+[1] "bell pepper"  "bilberry"     "blackberry"   "blood orange"
+
+[5] "blueberry"    "cantaloupe"   "chili pepper" "cloudberry"  
+
+[9] "elderberry"   "lime"         "lychee"       "mulberry"    
+
+[13] "olive"        "salal berry"
+
+Into a format like this:
+
+c("bell pepper", "bilberry", "blackberry", "blood orange", "blueberry", "cantaloupe", "chili pepper", "cloudberry", "elderberry", "lime", "lychee", "mulberry", "olive", "salal berry")
+
+```{r exercise 2}
+ugly_sting <- '[1] "bell pepper"  "bilberry"     "blackberry"   "blood orange"
+
+[5] "blueberry"    "cantaloupe"   "chili pepper" "cloudberry"  
+
+[9] "elderberry"   "lime"         "lychee"       "mulberry"    
+
+[13] "olive"        "salal berry"'
+better_string <- str_remove_all(ugly_sting, "[^[:alnum:]\\W]")
+writeLines(better_string)
+#Only thing left to do is to add a comma after every second quotation.
+```
+
+# Exercise 3
+Describe, in words, what these expressions will match:
+
+(.)\1\1
+```{r}
+library(htmlwidgets)
+test <- c("a", "abab","aabb", "abba", "abracadabra", "a\1\1", "aaaaaaa", "aabbaa")
+str_view_all(test, "(.)\1\1")
+```
+
+This expression searches for any character that is followed by the characters "\1\1".
+
+"(.)(.)\\2\\1"
+```{r}
+str_view_all(test, "(.)(.)\\2\\1")
+```
+
+This expression searches for strings that contain the following format: char(a)char(b)char(b)char(a)
+
+(..)\1
+```{r}
+str_view_all(test, "(..)\1")
+```
+
+This expression looks for any two characters that are followed by the literal characters \1.
+
+"(.).\\1.\\1"
+```{r}
+str_view_all(test, "(.).\\1.\\1")
+```
+
+This expression searches for any string of the form a[]a[]a, where a can be any character, and inside the brackets must be seperate characters.
+
+"(.)(.)(.).*\\3\\2\\1"
+```{r}
+str_view_all(test, "(.)(.)(.).*\\3\\2\\1")
+```
+
+This expression I believe takes any three characters abc and searches for strings that have the form abc[]cba. Where the bracket can be any character.
+
+#Exercise 4
+
+construct regular expressions to match words that:
+
+Start and end with the same character.
+```{r}
+str_view_all(test, "^(.).*\\1$")
+```
+Contain a repeated pair of letters (e.g. "church" contains "ch" repeated twice.)
+```{r}
+test_new <- c("church", "eleven")
+str_view_all(test_new, "(..).*\\1")
+```
+Contain one letter repeated in at least three places (e.g. "eleven" contains three "e"s.)
+```{r}
+str_view_all(test_new, "(.).*\\1.*\\1")
+```
